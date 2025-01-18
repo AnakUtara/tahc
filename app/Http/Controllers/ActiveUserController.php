@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\ActiveUser;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ActiveUserController extends Controller
 {
@@ -12,7 +13,9 @@ class ActiveUserController extends Controller
      */
     public function index()
     {
-        //
+        $activeUsers = ActiveUser::with('user')->where('user_id', '!=', Auth::user()->id)->latest()->paginate(10);
+
+        return response()->json($activeUsers);
     }
 
     /**
