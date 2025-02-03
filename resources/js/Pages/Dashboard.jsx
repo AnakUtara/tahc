@@ -1,31 +1,28 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
-import axios from "axios";
 import { useEffect, useState } from "react";
 
-export default function Dashboard() {
+export default function Dashboard({ authUser }) {
     const [activeUserList, setActiveUserList] = useState([]);
 
-    async function getActiveUserList() {
-        try {
-            const res = await axios.get(route("active-users.index"));
-            setActiveUserList(res.data);
-            console.log(res.data);
-        } catch (error) {
-            console.log(error.message);
-        }
-    }
-
     useEffect(() => {
-        Echo.private("update-lobby").listen("UpdateActiveUserList", (e) => {
-            console.log(e.test);
-            getActiveUserList();
-        });
-
-        getActiveUserList();
-
+        Echo.join(`active-users`)
+            .here((users) => {
+                setActiveUserList(users.filter((u) => u.id !== authUser.id));
+            })
+            .joining((user) => {
+                console.log("User Joining:", user.name);
+                setActiveUserList((prevList) => [...prevList, user]);
+            })
+            .leaving((user) => {
+                console.log("User Leaving:", user.name);
+                setActiveUserList((prevList) =>
+                    prevList.filter((u) => u.id !== user.id)
+                );
+            })
+            .error((error) => console.error(error.message));
         return () => {
-            Echo.leave("update-lobby");
+            Echo.leave(`active-users`);
         };
     }, []);
 
@@ -45,11 +42,19 @@ export default function Dashboard() {
                         <div className="p-6 text-gray-900">
                             You're logged in!
                         </div>
-                        <pre>
-                            <code>
-                                {JSON.stringify(activeUserList, null, 2)}
-                            </code>
-                        </pre>
+                        <div className="p-6 text-gray-900">
+                            Who is in the lobby:
+                        </div>
+                        {activeUserList.length > 0 &&
+                            activeUserList.map((user) => (
+                                <div
+                                    className="flex items-center justify-between p-2 border border-gray-500"
+                                    key={user.id}
+                                >
+                                    <p>{user.name}</p>
+                                    <p>Online</p>
+                                </div>
+                            ))}
                     </div>
                 </div>
             </div>

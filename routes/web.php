@@ -12,12 +12,13 @@ Route::get('/', function () {
 });
 
 Route::get('/lobby', function () {
-    return Inertia::render('Dashboard');
+    return Inertia::render('Dashboard', [
+        'authUser' => Auth::user(),
+    ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 
 Route::middleware('auth')->group(function () {
-    Route::get('/active-users', [ActiveUserController::class, 'index'])->name('active-users.index');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

@@ -23,8 +23,6 @@ class TrackLogout
      */
     public function handle(Logout $event): void
     {
-        ActiveUser::where('user_id', $event->user->id)->delete();
-
-        UpdateActiveUserList::dispatch();
+        //
     }
 }
