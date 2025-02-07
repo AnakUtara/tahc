@@ -1,7 +1,10 @@
 <?php
 
 use App\Http\Controllers\ActiveUserController;
+use App\Http\Controllers\ChatroomController;
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ProfileController;
+use App\Models\Chatroom;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
@@ -11,11 +14,18 @@ Route::get('/', function () {
     return Auth::check() ? redirect()->route('login') : redirect()->route('dashboard');
 });
 
-Route::get('/lobby', function () {
-    return Inertia::render('Dashboard', [
-        'authUser' => Auth::user(),
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/', function () {
+        return Inertia::render('Dashboard', [
+            'authUser' => Auth::user(),
+        ]);
+    })->name('dashboard');
+    Route::resources([
+        'chatrooms' => ChatroomController::class,
+        'messages' => MessageController::class
     ]);
-})->middleware(['auth', 'verified'])->name('dashboard');
+});
 
 
 Route::middleware('auth')->group(function () {
