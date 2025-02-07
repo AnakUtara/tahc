@@ -2,11 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Events\SendChatMessage;
-use App\Models\Message;
+use App\Models\User;
 use Illuminate\Http\Request;
 
-class MessageController extends Controller
+class UserController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -29,23 +28,13 @@ class MessageController extends Controller
      */
     public function store(Request $request)
     {
-        $messageRequest = $request->validate([
-            'content' => ['required', 'string', 'max:1000'],
-            'user_id' => ['required', 'integer'],
-            'chatroom_id' => ['required', 'integer']
-        ]);
-
-        $message = Message::create($messageRequest);
-
-        $message->load(['sender', 'chatroom']);
-
-        broadcast(new SendChatMessage($message));
+        //
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(Message $message)
+    public function show(User $user)
     {
         //
     }
@@ -53,7 +42,7 @@ class MessageController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Message $message)
+    public function edit(User $user)
     {
         //
     }
@@ -61,7 +50,7 @@ class MessageController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Message $message)
+    public function update(Request $request, User $user)
     {
         //
     }
@@ -69,7 +58,7 @@ class MessageController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Message $message)
+    public function destroy(User $user)
     {
         //
     }

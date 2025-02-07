@@ -3,7 +3,12 @@
 namespace App\Http\Controllers;
 
 use App\Models\Chatroom;
+use App\Models\User;
+use Illuminate\Support\Str;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ChatroomController extends Controller
 {
@@ -28,7 +33,31 @@ class ChatroomController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $userA = Auth::user();
+        $userB = User::findOrFail($request->user_id);
+
+        $chatroom = Chatroom::findExistingByUsers($userA, $userB);
+
+        if ($chatroom->exists()) {
+            return $chatroom->with(['users', 'messages.sender'])->first();
+        }
+
+        try {
+            $newChatroom = DB::transaction(function () use ($userA, $userB) {
+                $ids = [$userA->id, $userB->id];
+                sort($ids);
+                $slug = 'chatroom-' . implode('-', $ids);
+                return Chatroom::lockForUpdate()->firstOrCreate([
+                    'slug' => Str::slug($slug),
+                ]);
+            });
+
+            Chatroom::find($newChatroom->id)->users()->syncWithoutDetaching([$userA, $userB]);
+
+            return $newChatroom->with(['users', 'messages.sender'])->first();
+        } catch (\Throwable $th) {
+            Log::error('Chatroom creation error: ' . $th->getMessage());
+        }
     }
 
     /**
