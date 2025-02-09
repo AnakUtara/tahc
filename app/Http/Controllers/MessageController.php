@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Events\SendChatMessage;
 use App\Models\Message;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 
 class MessageController extends Controller
 {
@@ -29,17 +30,27 @@ class MessageController extends Controller
      */
     public function store(Request $request)
     {
+        Log::debug($request);
         $messageRequest = $request->validate([
             'content' => ['required', 'string', 'max:1000'],
             'user_id' => ['required', 'integer'],
             'chatroom_id' => ['required', 'integer']
         ]);
 
-        $message = Message::create($messageRequest);
+        $message = Message::create([
+            'content' => $messageRequest['content'],
+            'user_id' => $messageRequest['user_id'],
+            'chatroom_id' => $messageRequest['chatroom_id']
+        ]);
 
         $message->load(['sender', 'chatroom']);
 
-        broadcast(new SendChatMessage($message));
+        broadcast(new SendChatMessage($message))->toOthers();
+
+        return response([
+            'message' => $message,
+            'tempID' => request()->tempID
+        ]);
     }
 
     /**

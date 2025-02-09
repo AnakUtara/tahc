@@ -7,10 +7,10 @@ export default function ChatBubble({ message, authUser }) {
             } gap-2.5 mb-4`}
         >
             <div
-                className={`flex flex-col w-full max-w-[320px] leading-1.5 p-4 border-gray-200 bg-gray-100 ${
+                className={`flex flex-col w-full max-w-[320px] leading-1.5 p-4 border-gray-200 ${
                     isSender
                         ? "rounded-s-xl rounded-ee-xl bg-black"
-                        : "rounded-e-xl rounded-es-xl"
+                        : "rounded-e-xl rounded-es-xl bg-gray-200"
                 } dark:bg-gray-700`}
             >
                 <div

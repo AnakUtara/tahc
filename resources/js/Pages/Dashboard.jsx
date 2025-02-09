@@ -1,63 +1,32 @@
 import ChatBubble from "@/Components/ChatBubble";
-import { handleCreateChatroom } from "@/Handlers/handlers";
+import useActiveUserList from "@/Hooks/useActiveUserList";
+import useChatroom from "@/Hooks/useChatroom";
+import useOptimisticChat from "@/Hooks/useOptimisticChat";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, useForm } from "@inertiajs/react";
+import axios from "axios";
 import { Button, Sidebar, Textarea } from "flowbite-react";
-import { useRef, useEffect, useState } from "react";
+import { nanoid } from "nanoid";
+import { useRef, useEffect } from "react";
 
 export default function Dashboard({ authUser }) {
-    const [activeUserList, setActiveUserList] = useState([]);
-    const [activeChatroom, setActiveChatroom] = useState(null);
-    const [messages, setMessages] = useState([]);
-    const { data, setData, post, reset, processing, errors } = useForm({
-        content: "",
-        user_id: authUser.id,
-        chatroom_id: activeChatroom?.id,
-    });
-
-    const scrollBottomRef = useRef();
-
-    useEffect(() => {
-        scrollBottomRef.current?.scrollIntoView({ behavior: "smooth" });
-    }, [messages]);
-
-    function submit(e) {
-        e.preventDefault();
-        post(route("messages.store"));
-        reset("content");
-    }
-
-    useEffect(() => {
-        Echo.join(`active-users`)
-            .here((users) => {
-                setActiveUserList(users.filter((u) => u.id !== authUser.id));
-            })
-            .joining((user) => {
-                console.log("User Joining:", user.name);
-                setActiveUserList((prevList) => [...prevList, user]);
-            })
-            .leaving((user) => {
-                console.log("User Leaving:", user.name);
-                setActiveUserList((prevList) =>
-                    prevList.filter((u) => u.id !== user.id)
-                );
-            })
-            .error((error) => console.error(error.message));
-
-        if (activeChatroom) {
-            Echo.private(`chatroom.${activeChatroom?.id}`).listen(
-                "SendChatMessage",
-                (e) => {
-                    setMessages((prevMessages) => [...prevMessages, e.message]);
-                }
-            );
-        }
-        console.log(messages);
-        return () => {
-            Echo.leave(`active-users`);
-            Echo.leave(`chatroom.${activeChatroom?.id}`);
-        };
-    }, [activeChatroom]);
+    const [activeUserList] = useActiveUserList(authUser);
+    const { activeChatroom, messages, setMessages, handleCreateChatroom } =
+        useChatroom();
+    const {
+        submit,
+        handleMessageChange,
+        processing,
+        errors,
+        data,
+        scrollBottomRef,
+    } = useOptimisticChat(
+        authUser,
+        messages,
+        setMessages,
+        activeChatroom,
+        Echo
+    );
 
     return (
         <AuthenticatedLayout>
@@ -87,8 +56,7 @@ export default function Dashboard({ authUser }) {
                                                         className="prose text-left"
                                                         onClick={() =>
                                                             handleCreateChatroom(
-                                                                user.id,
-                                                                setActiveChatroom
+                                                                user.id
                                                             )
                                                         }
                                                     >
@@ -146,19 +114,10 @@ export default function Dashboard({ authUser }) {
                                             rows={4}
                                             placeholder="Your message..."
                                             value={data.content}
-                                            onChange={(e) => {
-                                                setData(
-                                                    "content",
-                                                    e.target.value
-                                                );
-                                                setData(
-                                                    "chatroom_id",
-                                                    activeChatroom?.id
-                                                );
-                                            }}
+                                            onChange={handleMessageChange}
                                         />
                                         {errors.contents && (
-                                            <div>{errors.contents}</div>
+                                            <div>{errors.content}</div>
                                         )}
                                         <Button
                                             size="lg"
