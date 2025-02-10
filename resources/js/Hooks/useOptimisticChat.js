@@ -29,12 +29,12 @@ export default function useOptimisticChat(
         const tempID = `temp-${nanoid(10)}`;
         data.tempID = tempID;
         const optimisticMessage = {
-            id: tempID, // Use temp_id for the optimistic message
+            id: tempID,
             content: data.content,
             user_id: authUser.id,
             sender: { id: authUser.id, name: authUser.name },
             chatroom_id: activeChatroom.id,
-            optimistic: true, // Flag it as optimistic
+            optimistic: true,
             created_at: new Date().toISOString(),
         };
         setMessages((prevMessages) => [...prevMessages, optimisticMessage]);

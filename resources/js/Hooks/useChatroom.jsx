@@ -9,7 +9,6 @@ export default function useChatroom() {
             Echo.private(`chatroom.${activeChatroom?.id}`).listen(
                 "SendChatMessage",
                 (e) => {
-                    console.log(e.message);
                     setMessages((prevMessages) => [...prevMessages, e.message]);
                 }
             );

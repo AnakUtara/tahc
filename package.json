@@ -26,6 +26,7 @@
     },
     "dependencies": {
         "flowbite-react": "^0.10.2",
-        "nanoid": "^5.0.9"
+        "nanoid": "^5.0.9",
+        "sonner": "^1.7.4"
     }
 }

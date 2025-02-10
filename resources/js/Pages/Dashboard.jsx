@@ -1,18 +1,19 @@
 import ChatBubble from "@/Components/ChatBubble";
 import useActiveUserList from "@/Hooks/useActiveUserList";
+import useChatNotification from "@/Hooks/useChatNotification";
 import useChatroom from "@/Hooks/useChatroom";
 import useOptimisticChat from "@/Hooks/useOptimisticChat";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
-import { Head, useForm } from "@inertiajs/react";
-import axios from "axios";
+import { Head } from "@inertiajs/react";
 import { Button, Sidebar, Textarea } from "flowbite-react";
-import { nanoid } from "nanoid";
-import { useRef, useEffect } from "react";
 
 export default function Dashboard({ authUser }) {
+    //active user list hook
     const [activeUserList] = useActiveUserList(authUser);
+
     const { activeChatroom, messages, setMessages, handleCreateChatroom } =
         useChatroom();
+
     const {
         submit,
         handleMessageChange,
@@ -27,6 +28,8 @@ export default function Dashboard({ authUser }) {
         activeChatroom,
         Echo
     );
+
+    useChatNotification(activeChatroom, authUser);
 
     return (
         <AuthenticatedLayout>

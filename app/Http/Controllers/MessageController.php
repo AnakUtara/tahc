@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Events\SendChatMessage;
+use App\Events\SendChatNotification;
 use App\Models\Message;
+use App\Notifications\NewChatNotification;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 
@@ -30,7 +32,6 @@ class MessageController extends Controller
      */
     public function store(Request $request)
     {
-        Log::debug($request);
         $messageRequest = $request->validate([
             'content' => ['required', 'string', 'max:1000'],
             'user_id' => ['required', 'integer'],
@@ -46,6 +47,9 @@ class MessageController extends Controller
         $message->load(['sender', 'chatroom']);
 
         broadcast(new SendChatMessage($message))->toOthers();
+
+        $recipient = $message->chatroom->users->where('id', '!=', $message->user_id)->first();
+        if($recipient) $recipient->notify(new NewChatNotification($message));
 
         return response([
             'message' => $message,
