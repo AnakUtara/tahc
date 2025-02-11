@@ -19,7 +19,7 @@ export default function ChatBubble({ message, authUser }) {
                     } space-x-2 rtl:space-x-reverse`}
                 >
                     <span
-                        className={`text-sm font-semibold ${
+                        className={`text-sm font-bold ${
                             isSender ? "text-white text-right" : "text-gray-900"
                         } dark:text-white`}
                     >
@@ -34,7 +34,7 @@ export default function ChatBubble({ message, authUser }) {
                     </span>
                 </div>
                 <p
-                    className={`text-sm font-normal py-2.5 ${
+                    className={`font-normal my-2 ${
                         isSender ? "text-white text-right" : "text-gray-900"
                     } dark:text-white`}
                 >

@@ -1,3 +1,4 @@
+import ActiveUsersSidebar from "@/Components/ActiveUsersSidebar";
 import ChatBubble from "@/Components/ChatBubble";
 import useActiveUserList from "@/Hooks/useActiveUserList";
 import useChatNotification from "@/Hooks/useChatNotification";
@@ -5,14 +6,21 @@ import useChatroom from "@/Hooks/useChatroom";
 import useOptimisticChat from "@/Hooks/useOptimisticChat";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head } from "@inertiajs/react";
-import { Button, Sidebar, Textarea } from "flowbite-react";
+import { Button, Drawer, Textarea } from "flowbite-react";
+import { useState } from "react";
+import { FaAddressBook } from "react-icons/fa6";
 
 export default function Dashboard({ authUser }) {
     //active user list hook
     const [activeUserList] = useActiveUserList(authUser);
 
-    const { activeChatroom, messages, setMessages, handleCreateChatroom } =
-        useChatroom();
+    const {
+        activeChatroom,
+        messages,
+        setMessages,
+        handleCreateChatroom,
+        typingUsers,
+    } = useChatroom();
 
     const {
         submit,
@@ -29,6 +37,12 @@ export default function Dashboard({ authUser }) {
         Echo
     );
 
+    const [isOpen, setIsOpen] = useState(false);
+
+    function handleClose() {
+        setIsOpen(false);
+    }
+
     useChatNotification(activeChatroom, authUser);
 
     return (
@@ -36,103 +50,146 @@ export default function Dashboard({ authUser }) {
             <Head title="TAHC" />
             <div className="py-8">
                 <div className="mx-auto max-w-7xl sm:px-6 lg:px-8">
+                    <Button
+                        className="absolute right-0 top-[4.5rem] drop-shadow-md rounded-se-none rounded-ee-none sm:hidden"
+                        color="dark"
+                        onClick={() => setIsOpen(true)}
+                    >
+                        <FaAddressBook className="size-6" />
+                    </Button>
                     <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                         <div className="flex h-[82vh]">
-                            <Sidebar className="h-full overflow-y-auto">
-                                <Sidebar.Items>
-                                    <Sidebar.ItemGroup>
-                                        <div className="prose">
+                            <Drawer
+                                className="w-fit"
+                                open={isOpen}
+                                onClose={handleClose}
+                            >
+                                <Drawer.Items>
+                                    <ActiveUsersSidebar
+                                        {...{
+                                            authUser,
+                                            activeUserList,
+                                            handleCreateChatroom,
+                                        }}
+                                        hidden={false}
+                                    />
+                                </Drawer.Items>
+                            </Drawer>
+                            <ActiveUsersSidebar
+                                {...{
+                                    authUser,
+                                    activeUserList,
+                                    handleCreateChatroom,
+                                }}
+                            />
+                            <div className="flex-1 p-4 size-full">
+                                {activeChatroom ? (
+                                    <>
+                                        <div className="prose h-[78%] max-w-full">
                                             <h3 className="mb-0 text-gray-900">
-                                                Welcome {authUser.name}!
+                                                Chatroom:{" "}
+                                                {activeChatroom.users
+                                                    .map((user) => user.name)
+                                                    .join(" & ")}
                                             </h3>
                                             <p className="mb-4 text-sm text-gray-900">
-                                                Find your anonymous person to
-                                                chat with:
+                                                Chat with your anonymous human!
                                             </p>
-                                        </div>
-                                    </Sidebar.ItemGroup>
-                                    <Sidebar.ItemGroup>
-                                        {activeUserList.length > 0 &&
-                                            activeUserList.map((user) => (
-                                                <Sidebar.Item key={user.id}>
-                                                    <div
-                                                        className="prose text-left"
-                                                        onClick={() =>
-                                                            handleCreateChatroom(
-                                                                user.id
-                                                            )
-                                                        }
-                                                    >
-                                                        <h2 className="m-0">
-                                                            {user.name}
-                                                        </h2>
-                                                        <p className="text-sm">
-                                                            Online
-                                                        </p>
-                                                    </div>
-                                                </Sidebar.Item>
-                                            ))}
-                                    </Sidebar.ItemGroup>
-                                </Sidebar.Items>
-                            </Sidebar>
-                            {activeChatroom && (
-                                <div className="flex-1 p-4 size-full">
-                                    <div className="prose h-[80%] max-w-full">
-                                        <h3 className="mb-0 text-gray-900">
-                                            Chatroom:{" "}
-                                            {activeChatroom.users
-                                                .map((user) => user.name)
-                                                .join(" & ")}
-                                        </h3>
-                                        <p className="mb-4 text-sm text-gray-900">
-                                            Chat with your anonymous human!
-                                        </p>
-                                        <div className="h-[80%] overflow-y-auto pr-3">
-                                            {activeChatroom.messages.map(
-                                                (message) => (
+                                            <div className="h-[350px] pr-3 overflow-y-auto [&>div:nth-last-child(2)]:mb-0">
+                                                {activeChatroom.messages.map(
+                                                    (message) => (
+                                                        <ChatBubble
+                                                            key={message.id}
+                                                            {...{
+                                                                message,
+                                                                authUser,
+                                                            }}
+                                                        />
+                                                    )
+                                                )}
+                                                {messages.map((message) => (
                                                     <ChatBubble
                                                         key={message.id}
-                                                        message={message}
-                                                        authUser={authUser}
+                                                        {...{
+                                                            message,
+                                                            authUser,
+                                                        }}
                                                     />
-                                                )
-                                            )}
-                                            {messages.map((message) => (
-                                                <ChatBubble
-                                                    key={message.id}
-                                                    message={message}
-                                                    authUser={authUser}
-                                                />
-                                            ))}
-                                            <div ref={scrollBottomRef} />
+                                                ))}
+                                                <div ref={scrollBottomRef} />
+                                            </div>
                                         </div>
-                                    </div>
-                                    <form
-                                        onSubmit={submit}
-                                        className="h-[20%] flex gap-2"
-                                    >
-                                        <Textarea
-                                            id="contents"
-                                            name="contents"
-                                            rows={4}
-                                            placeholder="Your message..."
-                                            value={data.content}
-                                            onChange={handleMessageChange}
-                                        />
-                                        {errors.contents && (
-                                            <div>{errors.content}</div>
-                                        )}
-                                        <Button
-                                            size="lg"
-                                            className="items-center"
-                                            type="submit"
-                                            disabled={processing}
-                                        >
-                                            Send
-                                        </Button>
-                                    </form>
-                                </div>
-                            )}
+                                        <div className="h-[22%]">
+                                            <form
+                                                onSubmit={submit}
+                                                className="flex flex-col gap-2"
+                                            >
+                                                <Textarea
+                                                    id="contents"
+                                                    name="contents"
+                                                    rows={2}
+                                                    placeholder="Your message..."
+                                                    value={data.content}
+                                                    onChange={
+                                                        handleMessageChange
+                                                    }
+                                                />
+                                                <Button
+                                                    className="items-center"
+                                                    type="submit"
+                                                    disabled={processing}
+                                                    color="dark"
+                                                >
+                                                    Send
+                                                </Button>
+                                                {
+                                                    //Error text
+                                                }
+                                                {errors.contents && (
+                                                    <p className="text-xs text-red-600">
+                                                        *{errors.content}
+                                                    </p>
+                                                )}
+                                                {
+                                                    //Typing indicator
+                                                }
+                                                {Object.keys(typingUsers)
+                                                    .length > 0 && (
+                                                    <p className="text-xs">
+                                                        <strong>
+                                                            {Object.keys(
+                                                                typingUsers
+                                                            )
+                                                                .join(
+                                                                    Object.keys(
+                                                                        typingUsers
+                                                                    ).length > 1
+                                                                        ? ", "
+                                                                        : " "
+                                                                )
+                                                                .replaceAll(
+                                                                    /[0-9]-/g,
+                                                                    ""
+                                                                )}
+                                                        </strong>
+                                                        {Object.keys(
+                                                            typingUsers
+                                                        ).length > 1
+                                                            ? " are "
+                                                            : " is "}{" "}
+                                                        typing...
+                                                    </p>
+                                                )}
+                                            </form>
+                                        </div>
+                                    </>
+                                ) : (
+                                    <center className="grid h-full place-items-center">
+                                        Select anyone from the list to start a
+                                        chat
+                                    </center>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
