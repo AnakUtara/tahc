@@ -18,8 +18,8 @@ return new class extends Migration
             $table->foreignIdFor(Chatroom::class)->constrained('chatrooms', 'id')->cascadeOnDelete();
             $table->foreignIdFor(User::class)->constrained('users', 'id')->cascadeOnDelete();
             $table->text('content');
+            $table->timestamp('read_at')->nullable();
             $table->timestamps();
-            $table->unique(['chatroom_id', 'user_id']);
         });
     }
 

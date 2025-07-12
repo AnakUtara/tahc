@@ -4,7 +4,6 @@ use App\Http\Controllers\ActiveUserController;
 use App\Http\Controllers\ChatroomController;
 use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ProfileController;
-use App\Models\Chatroom;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
