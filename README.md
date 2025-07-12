@@ -1,66 +1,87 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# TAHC – The Anonymous Human Chat
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+TAHC (The Anonymous Human Chat) is a real-time web chat application that allows users to connect and converse anonymously with anyone logged into the site. This project was built as a learning experience to understand and implement WebSockets for real-time communication, leveraging a modern full-stack development approach.
 
-## About Laravel
+## 🚀 Live Demo
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+<video src="https://private-user-images.githubusercontent.com/141168468/465619006-4f5f6439-5b67-44a2-9b7a-0161b86f6907.mp4?jwt=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJnaXRodWIuY29tIiwiYXVkIjoicmF3LmdpdGh1YnVzZXJjb250ZW50LmNvbSIsImtleSI6ImtleTUiLCJleHAiOjE3NTIzMzAwODcsIm5iZiI6MTc1MjMyOTc4NywicGF0aCI6Ii8xNDExNjg0NjgvNDY1NjE5MDA2LTRmNWY2NDM5LTViNjctNDRhMi05YjdhLTAxNjFiODZmNjkwNy5tcDQ_WC1BbXotQWxnb3JpdGhtPUFXUzQtSE1BQy1TSEEyNTYmWC1BbXotQ3JlZGVudGlhbD1BS0lBVkNPRFlMU0E1M1BRSzRaQSUyRjIwMjUwNzEyJTJGdXMtZWFzdC0xJTJGczMlMkZhd3M0X3JlcXVlc3QmWC1BbXotRGF0ZT0yMDI1MDcxMlQxNDE2MjdaJlgtQW16LUV4cGlyZXM9MzAwJlgtQW16LVNpZ25hdHVyZT1hNDExNzQwNDI0MTc1NzRjMGQ4OGY3NGQ3ZDA5ZmUzNzQzZTIwOTU0NTA1OTUxZGMxZDc0YTBhNWYyZGM4MDJlJlgtQW16LVNpZ25lZEhlYWRlcnM9aG9zdCJ9.jyj1JN2WDpwZiLd2Xu1oYF5nY1f4tBYfdchCSqEjMrY" controls width="600">
+  Your browser does not support the video tag.
+</video>
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+_A demo video is also available in the repository’s [issues section](https://github.com/AnakUtara/tahc/issues/3) for a walkthrough of the app and its features._
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## 🛠️ Tech Stack
 
-## Learning Laravel
+- **Backend:** [Laravel 11](https://laravel.com/)  
+- **Frontend:** [React](https://react.dev/) via [Inertia.js](https://inertiajs.com/)  
+- **Authentication:** [Laravel Breeze Starter Kit](https://laravel.com/docs/11.x/starter-kits#breeze)  
+- **Styling:** [Tailwind CSS](https://tailwindcss.com/), [Flowbite React](https://flowbite-react.com/)  
+- **Real-Time Communication:** [Laravel Reverb](https://laravel.com/docs/11.x/broadcasting#reverb-server) (server), [Laravel Echo](https://laravel.com/docs/11.x/broadcasting#client-side-installation) (client)  
+- **Job Queues & Analytics:** [Redis](https://redis.io/) for queueing, [Laravel Horizon](https://laravel.com/docs/11.x/horizon) for monitoring  
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## ✨ Key Features & Learning Outcomes
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+### Real-Time Presence & Private Channels
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+- **User Presence:**  
+  - Login and logout events are broadcast on a presence channel.
+  - User data from the presence channel is streamed to React using Laravel Echo, allowing live updates of the user list.
+- **Private Chat Channels:**  
+  - Each chat session between two users occurs in a unique private channel, ensuring privacy and security.
+  - Users are automatically subscribed to these channels upon initiating a chat.
 
-## Laravel Sponsors
+### Optimistic UI & Live Notifications
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+- **Optimistic Updates:**  
+  - Implemented optimistic UI—messages appear instantly in the chat before being confirmed by the server, creating a smooth user experience.
+- **Live Toast Notifications:**  
+  - Chat data sent through private channels triggers real-time toast notifications using React, enhancing interactivity.
 
-### Premium Partners
+### Typing Indicators
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+- **Laravel Echo’s Whisper:**  
+  - Typing notifications are implemented using Echo’s whisper feature, allowing users to see when their chat partner is typing in real time.
 
-## Contributing
+### Modern Auth & Rapid Development
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+- **Breeze Starter Kit:**  
+  - Accelerated the setup of authentication and user management.
+  - Prebuilt React screens and server-side logic allowed more focus on real-time features.
 
-## Code of Conduct
+### Queue Offloading & Analytics
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+- **Redis & Horizon:**  
+  - Job queues, such as broadcasting or notifications, are offloaded to Redis for performance.
+  - Horizon provides real-time analytics and monitoring of queue health and throughput.
 
-## Security Vulnerabilities
+## 🧠 What I Learned
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Building TAHC gave me hands-on experience with:
 
-## License
+- The fundamentals and advanced concepts of WebSockets in Laravel and React.
+- The difference between presence and private channels, and how to manage user privacy in real-time apps.
+- Handling optimistic updates and creating responsive user interfaces.
+- Offloading heavy or asynchronous tasks to job queues and monitoring them with Horizon.
+- Leveraging starter kits to save development time and focus on custom, real-time features.
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+## 📂 Quick Start
+
+1. **Clone the repository:**  
+   `git clone https://github.com/AnakUtara/tahc.git`
+2. **Install dependencies:**  
+   - Backend: `composer install`
+   - Frontend: `npm install`
+3. **Set up environment:**  
+   - Copy `.env.example` to `.env` and configure your database, broadcasting, and Redis settings.
+4. **Run migrations and seeders:**  
+   `php artisan migrate --seed`
+5. **Start the servers:**  
+   - Backend: `php artisan serve`
+   - Frontend: `npm run dev`
+   - Laravel Reverb: `php artisan reverb:start`
+   - (Optional) Horizon: `php artisan horizon`
+
+## 🤝 Acknowledgments
+
+- Inspired by the Laravel and React communities.
+- Built to deepen understanding of real-time, full-stack web development.
